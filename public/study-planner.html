@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Study Planner - Lumora</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+}
+
+header{
+    background:#4f46e5;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:40px auto;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 20px rgba(0,0,0,.1);
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-top:15px;
+}
+
+textarea,
+input{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+textarea{
+    height:120px;
+    resize:vertical;
+}
+
+button{
+    margin-top:25px;
+    background:#4f46e5;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#372fcf;
+}
+
+#plan{
+    margin-top:30px;
+    background:#f7f7f7;
+    padding:20px;
+    border-radius:10px;
+    white-space:pre-wrap;
+    min-height:200px;
+}
+
+.back{
+    display:inline-block;
+    margin-top:20px;
+    text-decoration:none;
+    background:#4f46e5;
+    color:white;
+    padding:10px 20px;
+    border-radius:8px;
+}
+
+.back:hover{
+    background:#372fcf;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📅 AI Study Planner</h1>
+
+<p>Create a personalized study timetable with AI.</p>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<label>Subjects</label>
+
+<textarea
+id="subjects"
+placeholder="Example:
+Mathematics
+Physics
+Computer Science
+English"></textarea>
+
+<label>Exam Date</label>
+
+<input
+type="date"
+id="examDate">
+
+<label>Study Hours Per Day</label>
+
+<input
+type="number"
+id="hours"
+placeholder="Example: 4">
+
+<button onclick="generatePlan()">
+
+Generate Study Plan
+
+</button>
+
+<div id="plan">
+
+Your AI study plan will appear here...
+
+</div>
+
+<a href="dashboard.html" class="back">
+
+← Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+async function generatePlan(){
+
+const subjects=document.getElementById("subjects").value;
+const examDate=document.getElementById("examDate").value;
+const hours=document.getElementById("hours").value;
+
+if(subjects.trim()=="" || examDate=="" || hours==""){
+
+alert("Please complete all fields.");
+
+return;
+
+}
+
+document.getElementById("plan").innerHTML="📅 Creating your study plan...";
+
+try{
+
+const response=await fetch("/api/study-plan",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+subjects:subjects,
+examDate:examDate,
+hours:hours
+
+})
+
+});
+
+const data=await response.json();
+
+document.getElementById("plan").innerHTML=data.plan;
+
+}catch(error){
+
+document.getElementById("plan").innerHTML="❌ Error generating study plan.";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

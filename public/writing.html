@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Writing Assistant | Lumora</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.writing-assistant{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+textarea{
+    width:100%;
+    padding:15px;
+    border-radius:10px;
+    font-size:16px;
+}
+
+.ai-response{
+    margin-top:20px;
+    padding:20px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    white-space:pre-wrap;
+    background:#fafafa;
+    min-height:180px;
+}
+
+.btn{
+    padding:10px 20px;
+    margin:5px;
+    cursor:pointer;
+}
+
+#history{
+    margin-top:30px;
+}
+
+.history-item{
+    border:1px solid #ddd;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:8px;
+    background:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="dashboard-header">
+
+<div class="user-box">
+<h1>✍️ AI Writing Assistant</h1>
+<p>Generate essays, stories, emails, reports and more.</p>
+</div>
+
+<a href="dashboard.html" class="btn">← Back to Dashboard</a>
+
+</header>
+
+<section class="writing-assistant">
+
+<h2>Write Anything with AI</h2>
+
+<p>Enter your topic or instructions below.</p>
+
+<textarea
+id="writingPrompt"
+rows="10"
+placeholder="Examples:
+
+Write an essay about Artificial Intelligence.
+
+Write a formal email.
+
+Write a report on Climate Change.
+
+Write a speech.
+
+Write a story about Space.
+"></textarea>
+
+<br><br>
+
+<button class="btn" onclick="generateWriting()">
+Generate Writing
+</button>
+
+<button class="btn" onclick="downloadPDF()">
+📄 Download as PDF
+</button>
+
+<button class="btn" onclick="downloadWord()">
+📝 Download as Word
+</button>
+
+<button class="btn" onclick="saveHistory()">
+💾 Save Writing
+</button>
+
+<button class="btn" onclick="showHistory()">
+📚 View History
+</button>
+
+<button class="btn" onclick="clearHistory()">
+🗑 Clear History
+</button>
+
+<div
+id="writingResult"
+class="ai-response">
+Your AI writing will appear here...
+</div>
+
+<div id="history"></div>
+
+</section>
+
+<script>
+
+async function generateWriting(){
+
+const prompt=document.getElementById("writingPrompt").value.trim();
+
+if(prompt===""){
+alert("Please enter a topic.");
+return;
+}
+
+document.getElementById("writingResult").innerHTML="✍️ Generating...";
+
+try{
+
+const response=await fetch("/api/writing",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+prompt:prompt
+})
+
+});
+
+const data=await response.json();
+
+if(!response.ok){
+
+document.getElementById("writingResult").innerText=
+"❌ "+(data.writing||"Server Error");
+
+return;
+
+}
+
+document.getElementById("writingResult").innerText=data.writing;
+
+}catch(error){
+
+document.getElementById("writingResult").innerText=
+"❌ "+error.message;
+
+}
+
+}
+
+// PDF
+
+function downloadPDF(){
+
+const text=document.getElementById("writingResult").innerText;
+
+const win=window.open();
+
+win.document.write("<pre>"+text+"</pre>");
+
+win.print();
+
+}
+
+// WORD
+
+function downloadWord(){
+
+const text=document.getElementById("writingResult").innerText;
+
+const blob=new Blob([text],{
+type:"application/msword"
+});
+
+const link=document.createElement("a");
+
+link.href=URL.createObjectURL(blob);
+
+link.download="Lumora_Writing.doc";
+
+link.click();
+
+}
+
+// SAVE HISTORY
+
+function saveHistory(){
+
+const text=document.getElementById("writingResult").innerText;
+
+if(text==="Your AI writing will appear here..."||text.startsWith("❌")){
+
+alert("Nothing to save.");
+
+return;
+
+}
+
+let history=JSON.parse(localStorage.getItem("writingHistory"))||[];
+
+history.unshift({
+
+date:new Date().toLocaleString(),
+
+content:text
+
+});
+
+localStorage.setItem("writingHistory",JSON.stringify(history));
+
+alert("Saved Successfully!");
+
+}
+
+// SHOW HISTORY
+
+function showHistory(){
+
+const container=document.getElementById("history");
+
+container.innerHTML="<h2>Saved Writing History</h2>";
+
+let history=JSON.parse(localStorage.getItem("writingHistory"))||[];
+
+if(history.length===0){
+
+container.innerHTML+="<p>No history found.</p>";
+
+return;
+
+}
+
+history.forEach(item=>{
+
+container.innerHTML+=`
+
+<div class="history-item">
+
+<b>${item.date}</b>
+
+<pre>${item.content}</pre>
+
+</div>
+
+`;
+
+});
+
+}
+
+// CLEAR HISTORY
+
+function clearHistory(){
+
+if(confirm("Delete all saved writing history?")){
+
+localStorage.removeItem("writingHistory");
+
+document.getElementById("history").innerHTML="";
+
+alert("History Cleared");
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Tutor - Lumora</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f6fc;
+}
+
+header{
+background:#4f46e5;
+color:white;
+padding:20px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.left h1{
+margin-bottom:5px;
+}
+
+#userEmail{
+font-size:15px;
+opacity:.9;
+}
+
+.header-buttons button{
+
+margin-left:10px;
+padding:10px 18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:15px;
+
+}
+
+.dashboardBtn{
+background:white;
+color:#4f46e5;
+font-weight:bold;
+}
+
+.logoutBtn{
+background:#ef4444;
+color:white;
+}
+
+.container{
+
+max-width:900px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,.1);
+
+}
+
+h2{
+color:#4f46e5;
+margin-bottom:20px;
+}
+
+textarea{
+
+width:100%;
+height:180px;
+padding:15px;
+font-size:16px;
+border-radius:10px;
+border:1px solid #ccc;
+resize:none;
+
+}
+
+button.ask{
+
+margin-top:20px;
+padding:15px 25px;
+background:#4f46e5;
+color:white;
+border:none;
+border-radius:10px;
+font-size:16px;
+cursor:pointer;
+
+}
+
+button.ask:hover{
+background:#372fcf;
+}
+
+.answer{
+
+margin-top:30px;
+background:#eef2ff;
+padding:20px;
+border-radius:10px;
+
+}
+
+.answer h3{
+margin-bottom:15px;
+color:#4f46e5;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="left">
+
+<h1>🤖 Lumora AI Tutor</h1>
+
+<p id="userEmail">Loading...</p>
+
+</div>
+
+<div class="header-buttons">
+
+<button class="dashboardBtn"
+onclick="location.href='dashboard.html'">
+
+Dashboard
+
+</button>
+
+<button id="logoutBtn"
+class="logoutBtn">
+
+Logout
+
+</button>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<h2>Ask Anything</h2>
+
+<textarea
+id="question"
+placeholder="Example: Explain Artificial Intelligence in simple words."></textarea>
+
+<button
+class="ask"
+onclick="answerQuestion()">
+
+Ask AI
+
+</button>
+
+<div class="answer">
+
+<h3>AI Response</h3>
+
+<p id="response">
+
+Your answer will appear here.
+
+</p>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { auth } from "./firebase.js";
+
+import {
+onAuthStateChanged,
+signOut
+}
+
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("userEmail").innerHTML=
+"Logged in as: "+user.email;
+
+}else{
+
+window.location.href="login.html";
+
+}
+
+});
+
+document.getElementById("logoutBtn").onclick=()=>{
+
+signOut(auth).then(()=>{
+
+window.location.href="login.html";
+
+});
+
+};
+
+</script>
+
+<script>
+
+async function answerQuestion(){
+
+const question=document.getElementById("question").value;
+
+if(question.trim()==""){
+
+alert("Please enter a question.");
+
+return;
+
+}
+
+document.getElementById("response").innerHTML="🤖 Thinking...";
+
+try{
+
+const response=await fetch("/api/chat",{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+question
+
+})
+
+});
+
+if (!response.ok) {
+    throw new Error("Server error");
+}
+const data = await response.json();
+
+document.getElementById("response").innerHTML =
+    data.answer || data.response || "No response received.";
+
+}
+
+catch(err){
+
+console.error(err);
+
+document.getElementById("response").innerHTML =
+"❌ " + err.message;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

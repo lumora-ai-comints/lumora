@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Note Summarizer - Lumora</title>
+
+    <style>
+        body{
+            font-family:Arial,sans-serif;
+            background:#f5f7fb;
+            margin:0;
+        }
+
+        header{
+            background:#4f46e5;
+            color:white;
+            padding:20px;
+            text-align:center;
+        }
+
+        .container{
+            width:90%;
+            max-width:900px;
+            margin:40px auto;
+        }
+
+        textarea{
+            width:100%;
+            height:250px;
+            padding:15px;
+            font-size:16px;
+            border-radius:10px;
+            border:1px solid #ccc;
+            resize:vertical;
+        }
+
+        button{
+            margin-top:20px;
+            padding:12px 25px;
+            border:none;
+            background:#4f46e5;
+            color:white;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        button:hover{
+            background:#3730a3;
+        }
+
+        .result{
+            margin-top:30px;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 5px 15px rgba(0,0,0,.1);
+            white-space:pre-wrap;
+        }
+
+        .back{
+            display:inline-block;
+            margin-top:20px;
+            color:#4f46e5;
+            text-decoration:none;
+            font-weight:bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📄 AI Note Summarizer</h1>
+
+<p>Paste your notes and let Lumora summarize them.</p>
+
+</header>
+
+<div class="container">
+
+<textarea
+id="notes"
+placeholder="Paste your notes here..."></textarea>
+
+<br>
+
+<button onclick="summarizeNotes()">
+Generate Summary
+</button>
+
+<div id="summary" class="result">
+
+Your summary will appear here...
+
+</div>
+
+<a class="back" href="dashboard.html">
+← Back to Dashboard
+</a>
+
+</div>
+
+<script>
+
+async function summarizeNotes(){
+
+const notes=document.getElementById("notes").value;
+
+if(notes.trim()==""){
+alert("Please enter some notes.");
+return;
+}
+
+document.getElementById("summary").innerHTML="Generating summary...";
+
+try{
+
+const response=await fetch("/api/summarize",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+notes:notes
+})
+
+});
+
+const data=await response.json();
+
+document.getElementById("summary").innerHTML=data.summary;
+
+}
+catch(error){
+
+document.getElementById("summary").innerHTML="Error generating summary.";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

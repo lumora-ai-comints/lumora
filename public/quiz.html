@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Quiz Generator - Lumora</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+}
+
+header{
+    background:#4f46e5;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:40px auto;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 20px rgba(0,0,0,.1);
+}
+
+textarea{
+    width:100%;
+    height:220px;
+    padding:15px;
+    font-size:16px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    resize:vertical;
+}
+
+button{
+    margin-top:20px;
+    background:#4f46e5;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#372fcf;
+}
+
+#quiz{
+    margin-top:30px;
+    background:#f7f7f7;
+    padding:20px;
+    border-radius:10px;
+    white-space:pre-wrap;
+    min-height:200px;
+}
+
+.back{
+    display:inline-block;
+    margin-top:25px;
+    text-decoration:none;
+    background:#4f46e5;
+    color:white;
+    padding:10px 20px;
+    border-radius:8px;
+}
+
+.back:hover{
+    background:#372fcf;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>❓ AI Quiz Generator</h1>
+
+<p>Paste your notes and generate a quiz instantly.</p>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Enter Your Notes</h2>
+
+<textarea
+id="notes"
+placeholder="Paste your notes here..."
+></textarea>
+
+<br>
+
+<button onclick="generateQuiz()">
+
+Generate Quiz
+
+</button>
+
+<div id="quiz">
+
+Your quiz will appear here...
+
+</div>
+
+<a href="dashboard.html" class="back">
+
+← Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+async function generateQuiz(){
+
+const notes=document.getElementById("notes").value;
+
+if(notes.trim()==""){
+
+alert("Please enter your notes.");
+
+return;
+
+}
+
+document.getElementById("quiz").innerHTML="🧠 Generating Quiz...";
+
+try{
+
+const response=await fetch("/api/quiz",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+notes:notes
+})
+
+});
+
+const data=await response.json();
+
+document.getElementById("quiz").innerHTML=data.quiz;
+
+}
+catch(error){
+
+document.getElementById("quiz").innerHTML="❌ Error generating quiz.";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
