@@ -1,13 +1,21 @@
+
 {
   "name": "lumora",
   "version": "1.0.0",
-  "description": "",
-  "main": "script.js",
+  "description": "Lumora AI Learning Platform",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ai",
+    "education",
+    "learning",
+    "lumora",
+    "openrouter"
+  ],
+  "author": "ALI AASHAN BARKAT ALI",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
